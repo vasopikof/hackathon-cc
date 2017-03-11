@@ -16,26 +16,26 @@ type SimpleChaincode struct {
 }
 
 type Property struct {
-	id    string `json:"ID"`
+	id string `json:"ID"`
 	value string `json:"VALUE"`
 }
 
 type Iot struct {
-	id       string    `json:"IOT_ID"`
-	model    string `json:"MODEL"`
+	id string `json:"IOT_ID"`
+	model string `json:"MODEL"`
 	property string `json:"PROPERTY"`
-	id_event string    `json:"EVENT_ID"`
+	id_event string `json:"EVENT_ID"`
 }
 
 type Event struct {
-	id       string `json:"EVENT_ID"`
-	id_car   string `json:"CAR_ID"`
-	owner    string `json:"OWNER"`
+	id string `json:"EVENT_ID"`
+	id_car string `json:"CAR_ID"`
+	owner string `json:"OWNER"`
 	day_code string `json:"DAY_CODE"`
 	location string `json:"LOCATION"`
-	image    string `json:"IMAGE"`
+	image string `json:"IMAGE"`
 	describe string `json:"DESCRIBE"`
-	iot      string `json:"IOT"`
+	iot string `json:"IOT"`
 }
 
 type AllEvent struct {
@@ -182,12 +182,10 @@ func (t *SimpleChaincode) PutEvent(stub shim.ChaincodeStubInterface, args []stri
 	event.iot = args[7]
 
 	
-	inAsBytes, _ := json.Marshal(event)
+	jsonAsBytes, _ := json.Marshal(event)
 	
-	err = stub.PutState("_debug0", inAsBytes)
-
-	err = stub.PutState("_debug1", []byte("debug_this "+event.id+" "+event.id_car+" "+event.owner+" "+event.day_code+" "+event.location+" "+event.image+" "+event.describe+" "+event.iot))
-
+	err = stub.PutState("_debug1", jsonAsBytes)
+	
 	//split Iot informations, get the number of IOTs
 	iot_infos := strings.Split(event.iot, "|")
 	fmt.Printf("There are %d IOTs.", len(iot_infos))
