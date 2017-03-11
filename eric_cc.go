@@ -181,7 +181,10 @@ func (t *SimpleChaincode) PutEvent(stub shim.ChaincodeStubInterface, args []stri
 	event.describe = args[6]
 	event.iot = args[7]
 
-	inputAsBytes, _ := json.Marshal(event)
+	
+	inAsBytes, _ := json.Marshal(event)
+	
+	err = stub.PutState("_debug0", inAsBytes)
 
 	err = stub.PutState("_debug1", []byte("debug_this "+event.id+" "+event.id_car+" "+event.owner+" "+event.day_code+" "+event.location+" "+event.image+" "+event.describe+" "+event.iot))
 
