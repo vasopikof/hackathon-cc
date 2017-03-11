@@ -53,7 +53,6 @@ type Transaction struct{
 	SellerB string  `json:"SELLER_B_ID"`
 	PointA string  `json:"POINT_A"`
 	PointB string  `json:"POINT_B"`
-	Related []Point `json:"related"`		//array of marbles willing to trade away
 }
 
 type AllTx struct{
