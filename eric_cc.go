@@ -216,10 +216,10 @@ func (t *SimpleChaincode) GetInsuranceEvent(stub shim.ChaincodeStubInterface, ar
 }
 
 func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	fcn := args[0]
+	fcn = args[0]
 	valAsbytes, err := stub.GetState(fcn)									//get the var from chaincode state
 	if err != nil {
-		jsonResp = "{\"Error\":\"Failed to get state for " + args[1] + "\"}"
+		jsonResp = "{\"Error\":\"Failed to get state for " + args[0] + "\"}"
 		return nil, errors.New(jsonResp)
 	}
 	return valAsbytes, nil 
