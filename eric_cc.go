@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"encoding/json"
-	"time"
+
 	"strings"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
@@ -83,7 +83,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 
 	//init the values
 	jsonAsBytes, _ := json.Marshal(all_event)
-	err := stub.PutState(event_key, jsonAsBytes)
+	err = stub.PutState(event_key, jsonAsBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +135,7 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	} else if function == "GetInsuranceEvent" {
 		return t.GetInsuranceEvent(stub, args)
 	} else if function == "read" {
-		return t.Read(stub, args)
+		return t.read(stub, args)
 	}
 	fmt.Println("query did not find func: " + function) //error
 
