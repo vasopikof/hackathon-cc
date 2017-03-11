@@ -102,21 +102,14 @@ func (t *SimpleChaincode) Write(stub shim.ChaincodeStubInterface, args []string)
 	//name = args[0]															//rename for funsies
 	//value = args[1]
 
-	event_input := A_Event{}
+	pp := Property{}
 
-	event_input.id = "this_id"
-	event_input.id_car = "this_id_car"
-	event_input.owner = "this_owner"
-	event_input.day_code = "this_Day_code"
-	event_input.location = "this_location"
-	event_input.image = "this_image"
-	event_input.describe = "this_descibe"
-	event_input.iot = "this_IOT"
-
-	jsonAsBytes, _ := json.Marshal(event_input)
+	pp.id = "propid"
+	pp.value = "propvalue"
+	jsonAsBytes, _ := json.Marshal(pp)
 	
 
-	err = stub.PutState(event_key, jsonAsBytes) //rewrite open orders
+	err = stub.PutState(iot_key, jsonAsBytes) //rewrite open orders
 	if err != nil {
 		return nil, err
 	}
