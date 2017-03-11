@@ -169,10 +169,6 @@ func (t *SimpleChaincode) PutEvent(stub shim.ChaincodeStubInterface, args []stri
 	var err error
 	fmt.Println("running PutEvent()")
 
-	if len(args) != 8 {
-		return nil, errors.New("[PutEvent] Incorrect number of arguments. Expecting 11.")
-	}
-
 	//put all parameters to event
 	event := Event{}
 
