@@ -101,10 +101,29 @@ func (t *SimpleChaincode) Write(stub shim.ChaincodeStubInterface, args []string)
 
 	name = args[0]															//rename for funsies
 	value = args[1]
-	err = stub.PutState(name, []byte(value))								//write the variable into the chaincode state
+
+	event_input := A_Event{}
+
+	event_input.id = "this_id"
+	event_input.id_car = "this_id_car"
+	event_input.owner = "this_owner"
+	event_input.day_code = "this_Day_code"
+	event_input.location = "this_location"
+	event_input.image = "this_image"
+	event_input.describe = "this_descibe"
+	event_input.iot = "this_IOT"
+
+	jsonAsBytes, _ := json.Marshal([event_input,event_input])
+	
+
+	err = stub.PutState(event_key, jsonAsBytes) //rewrite open orders
 	if err != nil {
 		return nil, err
 	}
+	/*err = stub.PutState(name, []byte(value))								//write the variable into the chaincode state
+	if err != nil {
+		return nil, err
+	}*/
 	return nil, nil
 }
 
@@ -171,7 +190,7 @@ func (t *SimpleChaincode) PutEvent(stub shim.ChaincodeStubInterface, args []stri
 
 	//put all parameters to event
 	event_input := A_Event{}
-	err = stub.PutState("_debug2", []byte("enter PutState"))
+
 	event_input.id = args[0]
 	event_input.id_car = args[1]
 	event_input.owner = args[2]
@@ -198,7 +217,6 @@ func (t *SimpleChaincode) PutEvent(stub shim.ChaincodeStubInterface, args []stri
 	all_events.events = append(all_events.events, event_input)
 	jsonAsBytes, _ := json.Marshal(all_events)
 	
-	err = stub.PutState("_debug4", []byte("enter Resulting"))
 
 	err = stub.PutState(event_key, jsonAsBytes) //rewrite open orders
 	if err != nil {
