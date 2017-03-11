@@ -27,7 +27,7 @@ type Iot struct {
 	id_event string `json:"EVENT_ID"`
 }
 
-type Event struct {
+type A_Event struct {
 	id string `json:"EVENT_ID"`
 	id_car string `json:"CAR_ID"`
 	owner string `json:"OWNER"`
@@ -39,12 +39,12 @@ type Event struct {
 }
 
 type AllEvent struct {
-	events []Event `json:"EVENTS"`
+	events []A_Event `json:"EVENTS"`
 }
 
 //global variable of indexs and values
-var iot_key = "_iot_key"
-var event_key = "_event_key"
+var iot_key = "_iot_index"
+var event_key = "_event_index"
 
 // ============================================================================================================================
 // Main
@@ -59,7 +59,7 @@ func main() {
 // Init resets all the things
 func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	
-		var Aval int
+	var Aval int
 	var err error
 
 	if len(args) != 1 {
@@ -170,20 +170,20 @@ func (t *SimpleChaincode) PutEvent(stub shim.ChaincodeStubInterface, args []stri
 	fmt.Println("running PutEvent()")
 
 	//put all parameters to event
-	event := Event{}
+	event_input := A_Event{}
 	err = stub.PutState("_debug2", []byte("enter PutState"))
-	event.id = args[0]
-	event.id_car = args[1]
-	event.owner = args[2]
-	event.day_code = args[3]
-	event.location = args[4]
-	event.image = args[5]
-	event.describe = args[6]
-	event.iot = args[7]
+	event_input.id = args[0]
+	event_input.id_car = args[1]
+	event_input.owner = args[2]
+	event_input.day_code = args[3]
+	event_input.location = args[4]
+	event_input.image = args[5]
+	event_input.describe = args[6]
+	event_input.iot = args[7]
 
 	
 	//split Iot informations, get the number of IOTs
-	iot_infos := strings.Split(event.iot, "|")
+	iot_infos := strings.Split(event_input.iot, "|")
 	fmt.Printf("There are %d IOTs.", len(iot_infos))
 
 	//save event to BlockChain
@@ -191,12 +191,11 @@ func (t *SimpleChaincode) PutEvent(stub shim.ChaincodeStubInterface, args []stri
 	if err != nil {
 		return nil, errors.New("Failed to get events")
 	}
-	err = stub.PutState("_debug3", []byte("enter loop"))
 	var all_events AllEvent
 
 	json.Unmarshal(tmpBytes, &all_events)
 
-	all_events.events = append(all_events.events, event)
+	all_events.events = append(all_events.events, event_input)
 	jsonAsBytes, _ := json.Marshal(all_events)
 	
 	err = stub.PutState("_debug4", []byte("enter Resulting"))
