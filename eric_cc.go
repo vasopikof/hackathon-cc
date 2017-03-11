@@ -182,10 +182,6 @@ func (t *SimpleChaincode) PutEvent(stub shim.ChaincodeStubInterface, args []stri
 	event.iot = args[7]
 
 	
-	jsonAsBytes, _ := json.Marshal(event)
-	
-	err = stub.PutState("_debug1", jsonAsBytes)
-	
 	//split Iot informations, get the number of IOTs
 	iot_infos := strings.Split(event.iot, "|")
 	fmt.Printf("There are %d IOTs.", len(iot_infos))
