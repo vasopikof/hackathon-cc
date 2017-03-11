@@ -113,7 +113,7 @@ func (t *SimpleChaincode) Write(stub shim.ChaincodeStubInterface, args []string)
 	event_input.describe = "this_descibe"
 	event_input.iot = "this_IOT"
 
-	jsonAsBytes, _ := json.Marshal([event_input,event_input])
+	jsonAsBytes, _ := json.Marshal(event_input)
 	
 
 	err = stub.PutState(event_key, jsonAsBytes) //rewrite open orders
