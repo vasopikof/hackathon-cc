@@ -68,6 +68,18 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	return nil, nil
 }
 
+func (t *SimpleChaincode) Write(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
+	//just prepare for search
+
+	//init the values
+	jsonAsBytes, _ := json.Marshal(args[1])
+	err := stub.PutState(args[0], jsonAsBytes)
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
+}
+
 // Invoke is our entry point to invoke a chaincode function
 func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Println("invoke is running " + function)
@@ -77,6 +89,8 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return t.Init(stub, "init", args)
 	} else if function == "PutEvent" {
 		return t.PutEvent(stub, args)
+	}else if(function =="write"){
+		return t.Write(stub,args);
 	}
 	fmt.Println("invoke did not find func: " + function) //error
 
@@ -203,14 +217,10 @@ func (t *SimpleChaincode) GetInsuranceEvent(stub shim.ChaincodeStubInterface, ar
 
 func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fcn := args[0]
-	if fcn == "read" {
-		valAsbytes, err := stub.GetState(event_key)
-		if err != nil {
-			jsonResp := "{\"Error\":\"Failed to get state for " + args[1] + "\"}"
-			return nil, errors.New(jsonResp)
-		}
-		return valAsbytes, nil
+	valAsbytes, err := stub.GetState(fcn)									//get the var from chaincode state
+	if err != nil {
+		jsonResp = "{\"Error\":\"Failed to get state for " + args[1] + "\"}"
+		return nil, errors.New(jsonResp)
 	}
-
-	return nil, nil
+	return valAsbytes, nil 
 }
