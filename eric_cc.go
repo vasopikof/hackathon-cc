@@ -11,6 +11,8 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
+var minimalTxStr = "_minimaltx"
+
 // SimpleChaincode example simple Chaincode implementation
 type SimpleChaincode struct {
 }
@@ -40,6 +42,22 @@ type A_Event struct {
 
 type AllEvent struct {
 	events []A_Event `json:"EVENTS"`
+}
+
+type Transaction struct{
+	Id string `json:"txID"`					//user who created the open trade order
+	Timestamp string `json:"EX_TIME"`			//utc timestamp of creation
+	TraderA string  `json:"USER_A_ID"`				//description of desired marble
+	TraderB string  `json:"USER_B_ID"`
+	SellerA string  `json:"SELLER_A_ID"`				//description of desired marble
+	SellerB string  `json:"SELLER_B_ID"`
+	PointA string  `json:"POINT_A"`
+	PointB string  `json:"POINT_B"`
+	Related []Point `json:"related"`		//array of marbles willing to trade away
+}
+
+type AllTx struct{
+	TXs []Transaction `json:"tx"`
 }
 
 //global variable of indexs and values
@@ -78,12 +96,18 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 		return nil, err
 	}
 
+
+
 	//just prepare for search
 	var all_event AllEvent
 
 	//init the values
 	jsonAsBytes, _ := json.Marshal(all_event)
 	err = stub.PutState(event_key, jsonAsBytes)
+	if err != nil {
+		return nil, err
+	}
+	err = stub.PutState(minimalTxStr, jsonAsBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -131,11 +155,66 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return t.PutEvent(stub, args)
 	} else if function == "write" {											//writes a value to the chaincode state
 		return t.Write(stub, args)
+	}else if function == "init_transaction" {									//create a new trade order
+		return t.init_transaction(stub, args)
 	}
 	fmt.Println("invoke did not find func: " + function) //error
 
 	return nil, errors.New("Received unknown function invocation: " + function)
 }
+
+func (t *SimpleChaincode) init_transaction(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var err error	
+	//	0        1      2     3      4      5       6
+	//["bob", "blue", "16", "red", "16"] *"blue", "35*
+
+	/*
+	Id string `json:"txID"`					//user who created the open trade order
+	Timestamp string `json:"EX_TIME"`			//utc timestamp of creation
+	TraderA string  `json:"USER_A_ID"`				//description of desired marble
+	TraderB string  `json:"USER_B_ID"`
+	SellerA string  `json:"SELLER_A_ID"`				//description of desired marble
+	SellerB string  `json:"SELLER_B_ID"`
+	PointA string  `json:"POINT_A"`
+	PointB string  `json:"POINT_B"`
+	Related []Point `json:"related"`
+}
+	*/
+
+
+	open := Transaction{}
+	open.Id = args[0]
+	open.TraderA = args[1]
+	open.TraderB = args[2]
+	open.SellerA = args[3]
+	open.SellerB = args[4]
+	open.PointA = args[5]
+	open.PointB = args[6]
+	open.Timestamp = args[7]
+	
+	fmt.Println("- start open trade")
+	jsonAsBytes, _ := json.Marshal(open)
+	err = stub.PutState("_debug1", jsonAsBytes)
+
+	//get the open trade struct
+	tradesAsBytes, err := stub.GetState(minimalTxStr)
+	if err != nil {
+		return nil, errors.New("Failed to get TXs")
+	}
+	var trades AllTx
+	json.Unmarshal(tradesAsBytes, &trades)										//un stringify it aka JSON.parse()
+	
+	trades.TXs = append(trades.TXs, open);						//append to open trades
+	fmt.Println("! appended open to trades")
+	jsonAsBytes, _ = json.Marshal(trades)
+	err = stub.PutState(minimalTxStr, jsonAsBytes)								//rewrite open orders
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("- end open trade")
+	return nil, nil
+}
+
 
 // Query is our entry point for queries
 func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
