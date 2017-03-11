@@ -115,7 +115,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 	// Handle different functions
 	if function == "init" { //initialize the chaincode state, used as reset
 		return t.Init(stub, "init", args)
-	} else if function == "putEvent" {
+	} else if function == "PutEvent" {
 		return t.PutEvent(stub, args)
 	} else if function == "write" {											//writes a value to the chaincode state
 		return t.Write(stub, args)
