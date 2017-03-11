@@ -16,30 +16,30 @@ type SimpleChaincode struct {
 }
 
 type Property struct {
-	id    string 		'json:"ID"'
-	value string 	'json:"VALUE"'
+	id    string 		`json:"ID"`
+	value string 	`json:"VALUE"`
 }
 
 type Iot struct {
-	id       string    'json:"IOT_ID"'
-	model    string 'json:"MODEL"'
-	property string 'json:"PROPERTY"'
-	id_event string    'json:"EVENT_ID"'
+	id       string    `json:"IOT_ID"`
+	model    string `json:"MODEL"`
+	property string `json:"PROPERTY"`
+	id_event string    `json:"EVENT_ID"`
 }
 
 type Event struct {
-	id       string 'json:"EVENT_ID"'
-	id_car   string 'json:"CAR_ID"'
-	owner    string 'json:"OWNER"'
-	day_code string 'json:"DAY_CODE"'
-	location string 'json:"LOCATION"'
-	image    string 'json:"IMAGE"'
-	describe string 'json:"DESCRIBE"'
-	iot      string 'json:"IOT"'
+	id       string `json:"EVENT_ID"`
+	id_car   string `json:"CAR_ID"`
+	owner    string `json:"OWNER"`
+	day_code string `json:"DAY_CODE"`
+	location string `json:"LOCATION"`
+	image    string `json:"IMAGE"`
+	describe string `json:"DESCRIBE"`
+	iot      string `json:"IOT"`
 }
 
 type AllEvent struct {
-	events []Event 'json:"EVENTS"'
+	events []Event `json:"EVENTS"`
 }
 
 //global variable of indexs and values
