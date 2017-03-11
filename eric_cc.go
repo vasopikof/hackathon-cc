@@ -171,7 +171,7 @@ func (t *SimpleChaincode) putEvent(stub shim.ChaincodeStubInterface, args []stri
 
 	//put all parameters to event
 	event := Event{}
-	err = stub.PutState("_debug2", byte[]("enter PutState"))
+	err = stub.PutState("_debug2", []byte("enter PutState"))
 	event.id = args[0]
 	event.id_car = args[1]
 	event.owner = args[2]
@@ -183,7 +183,7 @@ func (t *SimpleChaincode) putEvent(stub shim.ChaincodeStubInterface, args []stri
 
 	inputAsBytes, _ := json.Marshal(event)
 
-	err = stub.PutState("_debug1", byte[]("debug_this "+event.id+" "+event.id_car+" "+event.owner+" "+event.day_code+" "+event.location+" "+event.image+" "+event.describe+" "+event.iot))
+	err = stub.PutState("_debug1", []byte("debug_this "+event.id+" "+event.id_car+" "+event.owner+" "+event.day_code+" "+event.location+" "+event.image+" "+event.describe+" "+event.iot))
 
 	//split Iot informations, get the number of IOTs
 	iot_infos := strings.Split(event.iot, "|")
@@ -194,7 +194,7 @@ func (t *SimpleChaincode) putEvent(stub shim.ChaincodeStubInterface, args []stri
 	if err != nil {
 		return nil, errors.New("Failed to get events")
 	}
-	err = stub.PutState("_debug3", byte[]("enter loop"))
+	err = stub.PutState("_debug3", []byte("enter loop"))
 	var all_events AllEvent
 
 	json.Unmarshal(tmpBytes, &all_events)
@@ -202,7 +202,7 @@ func (t *SimpleChaincode) putEvent(stub shim.ChaincodeStubInterface, args []stri
 	all_events.events = append(all_events.events, event)
 	jsonAsBytes, _ := json.Marshal(all_events)
 	
-	err = stub.PutState("_debug2", byte[]("enter Resulting"))
+	err = stub.PutState("_debug4", []byte("enter Resulting"))
 
 	err = stub.PutState(event_key, jsonAsBytes) //rewrite open orders
 	if err != nil {
