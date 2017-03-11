@@ -115,7 +115,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 	// Handle different functions
 	if function == "init" { //initialize the chaincode state, used as reset
 		return t.Init(stub, "init", args)
-	} else if function == "PutEvent" {
+	} else if function == "putEvent" {
 		return t.PutEvent(stub, args)
 	} else if function == "write" {											//writes a value to the chaincode state
 		return t.Write(stub, args)
@@ -164,14 +164,14 @@ func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) 
 	return valAsbytes, nil													//send it onward
 }
 
-func (t *SimpleChaincode) PutEvent(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func (t *SimpleChaincode) putEvent(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 
 	var err error
 	fmt.Println("running PutEvent()")
 
 	//put all parameters to event
 	event := Event{}
-
+	err = stub.PutState("_debug2", byte[]("enter PutState"))
 	event.id = args[0]
 	event.id_car = args[1]
 	event.owner = args[2]
@@ -182,7 +182,8 @@ func (t *SimpleChaincode) PutEvent(stub shim.ChaincodeStubInterface, args []stri
 	event.iot = args[7]
 
 	inputAsBytes, _ := json.Marshal(event)
-	err = stub.PutState("_debug1", inputAsBytes)
+
+	err = stub.PutState("_debug1", byte[]("debug_this "+event.id+" "+event.id_car+" "+event.owner+" "+event.day_code+" "+event.location+" "+event.image+" "+event.describe+" "+event.iot))
 
 	//split Iot informations, get the number of IOTs
 	iot_infos := strings.Split(event.iot, "|")
@@ -193,12 +194,15 @@ func (t *SimpleChaincode) PutEvent(stub shim.ChaincodeStubInterface, args []stri
 	if err != nil {
 		return nil, errors.New("Failed to get events")
 	}
+	err = stub.PutState("_debug3", byte[]("enter loop"))
 	var all_events AllEvent
 
 	json.Unmarshal(tmpBytes, &all_events)
 
 	all_events.events = append(all_events.events, event)
 	jsonAsBytes, _ := json.Marshal(all_events)
+	
+	err = stub.PutState("_debug2", byte[]("enter Resulting"))
 
 	err = stub.PutState(event_key, jsonAsBytes) //rewrite open orders
 	if err != nil {
