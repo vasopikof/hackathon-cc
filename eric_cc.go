@@ -165,7 +165,7 @@ func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) 
 }
 
 func (t *SimpleChaincode) PutEvent(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	var event Event
+
 	var err error
 	fmt.Println("running PutEvent()")
 
@@ -174,6 +174,8 @@ func (t *SimpleChaincode) PutEvent(stub shim.ChaincodeStubInterface, args []stri
 	}
 
 	//put all parameters to event
+	event := Event{}
+
 	event.id = args[0]
 	event.id_car = args[1]
 	event.owner = args[2]
@@ -182,6 +184,9 @@ func (t *SimpleChaincode) PutEvent(stub shim.ChaincodeStubInterface, args []stri
 	event.image = args[5]
 	event.describe = args[6]
 	event.iot = args[7]
+
+	inputAsBytes, _ := json.Marshal(event)
+	err = stub.PutState("_debug1", inputAsBytes)
 
 	//split Iot informations, get the number of IOTs
 	iot_infos := strings.Split(event.iot, "|")
@@ -193,9 +198,12 @@ func (t *SimpleChaincode) PutEvent(stub shim.ChaincodeStubInterface, args []stri
 		return nil, errors.New("Failed to get events")
 	}
 	var all_events AllEvent
+
 	json.Unmarshal(tmpBytes, &all_events)
+
 	all_events.events = append(all_events.events, event)
 	jsonAsBytes, _ := json.Marshal(all_events)
+	
 	err = stub.PutState(event_key, jsonAsBytes) //rewrite open orders
 	if err != nil {
 		return nil, err
