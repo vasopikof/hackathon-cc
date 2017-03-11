@@ -56,6 +56,26 @@ func main() {
 
 // Init resets all the things
 func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
+	
+		var Aval int
+	var err error
+
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 1")
+	}
+
+	// Initialize the chaincode
+	Aval, err = strconv.Atoi(args[0])
+	if err != nil {
+		return nil, errors.New("Expecting integer value for asset holding")
+	}
+
+	// Write the state to the ledger
+	err = stub.PutState("abc", []byte(strconv.Itoa(Aval)))				//making a test var "abc", I find it handy to read/write to it right away to test the network
+	if err != nil {
+		return nil, err
+	}
+
 	//just prepare for search
 	var all_event AllEvent
 
@@ -68,12 +88,18 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	return nil, nil
 }
 
-func (t *SimpleChaincode) Engrave(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
-	//just prepare for search
+func (t *SimpleChaincode) Write(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var name, value string // Entities
+	var err error
+	fmt.Println("running write()")
 
-	//init the values
-	jsonAsBytes, _ := json.Marshal(args[0])
-	err := stub.PutState(args[0], jsonAsBytes)
+	if len(args) != 2 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 2. name of the variable and value to set")
+	}
+
+	name = args[0]															//rename for funsies
+	value = args[1]
+	err = stub.PutState(name, []byte(value))								//write the variable into the chaincode state
 	if err != nil {
 		return nil, err
 	}
@@ -89,8 +115,8 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return t.Init(stub, "init", args)
 	} else if function == "PutEvent" {
 		return t.PutEvent(stub, args)
-	}else if(function =="Engrave"){
-		return t.Engrave(stub,args);
+	} else if function == "write" {											//writes a value to the chaincode state
+		return t.Write(stub, args)
 	}
 	fmt.Println("invoke did not find func: " + function) //error
 
@@ -112,6 +138,28 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	fmt.Println("query did not find func: " + function) //error
 
 	return nil, errors.New("Received unknown function query: " + function)
+}
+
+
+// ============================================================================================================================
+// Read - read a variable from chaincode state
+// ============================================================================================================================
+func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var name, jsonResp string
+	var err error
+
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting name of the var to query")
+	}
+
+	name = args[0]
+	valAsbytes, err := stub.GetState(name)									//get the var from chaincode state
+	if err != nil {
+		jsonResp = "{\"Error\":\"Failed to get state for " + name + "\"}"
+		return nil, errors.New(jsonResp)
+	}
+
+	return valAsbytes, nil													//send it onward
 }
 
 func (t *SimpleChaincode) PutEvent(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
@@ -213,14 +261,4 @@ func (t *SimpleChaincode) GetInsuranceEvent(stub shim.ChaincodeStubInterface, ar
 	jsonAsBytes, _ := json.Marshal(processed)
 
 	return jsonAsBytes, nil
-}
-
-func (t *SimpleChaincode) Read(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	fcn = args[0]
-	valAsbytes, err := stub.GetState(fcn)									//get the var from chaincode state
-	if err != nil {
-		jsonResp = "{\"Error\":\"Failed to get state for " + args[0] + "\"}"
-		return nil, errors.New(jsonResp)
-	}
-	return valAsbytes, nil 
 }
