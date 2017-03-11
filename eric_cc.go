@@ -16,8 +16,8 @@ type SimpleChaincode struct {
 }
 
 type Property struct {
-	id    string 		`json:"ID"`
-	value string 	`json:"VALUE"`
+	id    string `json:"ID"`
+	value string `json:"VALUE"`
 }
 
 type Iot struct {
@@ -170,20 +170,20 @@ func (t *SimpleChaincode) PutEvent(stub shim.ChaincodeStubInterface, args []stri
 	fmt.Println("running PutEvent()")
 
 	if len(args) != 8 {
-		return nil, errors.New("[PutEvent] Incorrect number of arguments. Expecting 8.")
+		return nil, errors.New("[PutEvent] Incorrect number of arguments. Expecting 11.")
 	}
 
 	//put all parameters to event
 	event := Event{}
 
-	event.id 		= args[0]
-	event.id_car 	= args[1]
-	event.owner 	= args[2]
-	event.day_code 	= args[3]
-	event.location 	= args[4]
-	event.image 	= args[5]
-	event.describe 	= args[6]
-	event.iot 		= args[7]
+	event.id = args[0]
+	event.id_car = args[1]
+	event.owner = args[2]
+	event.day_code = args[3]
+	event.location = args[4]
+	event.image = args[5]
+	event.describe = args[6]
+	event.iot = args[7]
 
 	inputAsBytes, _ := json.Marshal(event)
 	err = stub.PutState("_debug1", inputAsBytes)
