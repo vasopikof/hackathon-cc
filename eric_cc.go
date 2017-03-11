@@ -16,30 +16,30 @@ type SimpleChaincode struct {
 }
 
 type Property struct {
-	id    int
-	value string
+	id    string 		'json:"ID"'
+	value string 	'json:"VALUE"'
 }
 
 type Iot struct {
-	id       int    `json:"IOT_ID"`
-	model    string `json:"MODEL"`
-	property string `json:"PROPERTY"`
-	id_event int    `json:"EVENT_ID"`
+	id       string    'json:"IOT_ID"'
+	model    string 'json:"MODEL"'
+	property string 'json:"PROPERTY"'
+	id_event string    'json:"EVENT_ID"'
 }
 
 type Event struct {
-	id       string `json:"EVENT_ID"`
-	id_car   string `json:"CAR_ID"`
-	owner    string `json:"OWNER"`
-	day_code string `json:"DAY_CODE"`
-	location string `json:"LOCATION"`
-	image    string `json:"IMAGE"`
-	describe string `json:"DESCRIBE"`
-	iot      string `json:"IOT"`
+	id       string 'json:"EVENT_ID"'
+	id_car   string 'json:"CAR_ID"'
+	owner    string 'json:"OWNER"'
+	day_code string 'json:"DAY_CODE"'
+	location string 'json:"LOCATION"'
+	image    string 'json:"IMAGE"'
+	describe string 'json:"DESCRIBE"'
+	iot      string 'json:"IOT"'
 }
 
 type AllEvent struct {
-	events []Event `json:"EVENTS"`
+	events []Event 'json:"EVENTS"'
 }
 
 //global variable of indexs and values
@@ -170,20 +170,20 @@ func (t *SimpleChaincode) PutEvent(stub shim.ChaincodeStubInterface, args []stri
 	fmt.Println("running PutEvent()")
 
 	if len(args) != 8 {
-		return nil, errors.New("[PutEvent] Incorrect number of arguments. Expecting 11.")
+		return nil, errors.New("[PutEvent] Incorrect number of arguments. Expecting 8.")
 	}
 
 	//put all parameters to event
 	event := Event{}
 
-	event.id = args[0]
-	event.id_car = args[1]
-	event.owner = args[2]
-	event.day_code = args[3]
-	event.location = args[4]
-	event.image = args[5]
-	event.describe = args[6]
-	event.iot = args[7]
+	event.id 		= args[0]
+	event.id_car 	= args[1]
+	event.owner 	= args[2]
+	event.day_code 	= args[3]
+	event.location 	= args[4]
+	event.image 	= args[5]
+	event.describe 	= args[6]
+	event.iot 		= args[7]
 
 	inputAsBytes, _ := json.Marshal(event)
 	err = stub.PutState("_debug1", inputAsBytes)
@@ -203,7 +203,7 @@ func (t *SimpleChaincode) PutEvent(stub shim.ChaincodeStubInterface, args []stri
 
 	all_events.events = append(all_events.events, event)
 	jsonAsBytes, _ := json.Marshal(all_events)
-	
+
 	err = stub.PutState(event_key, jsonAsBytes) //rewrite open orders
 	if err != nil {
 		return nil, err
