@@ -274,27 +274,13 @@ func (t *SimpleChaincode) init_marble(stub shim.ChaincodeStubInterface, args []s
 		return nil, errors.New("4th argument must be a non-empty string")
 	}
 	name := args[0]
-	color := strings.ToLower(args[1])
-	user := strings.ToLower(args[3])
-	size, err := strconv.Atoi(args[2])
+	
 	if err != nil {
 		return nil, errors.New("3rd argument must be a numeric string")
 	}
 
 	//check if marble already exists
-	marbleAsBytes, err := stub.GetState(name)
-	if err != nil {
-		return nil, errors.New("Failed to get marble name")
-	}
-	res := Marble{}
-	json.Unmarshal(marbleAsBytes, &res)
-	if res.Name == name{
-		fmt.Println("This marble arleady exists: " + name)
-		fmt.Println(res);
-		return nil, errors.New("This marble arleady exists")				//all stop a marble by this name exists
-	}
 	
-		
 	//get the marble index
 	marblesAsBytes, err := stub.GetState(marbleIndexStr)
 	if err != nil {
