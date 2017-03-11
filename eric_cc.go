@@ -68,11 +68,11 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	return nil, nil
 }
 
-func (t *SimpleChaincode) Write(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
+func (t *SimpleChaincode) Engrave(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	//just prepare for search
 
 	//init the values
-	jsonAsBytes, _ := json.Marshal(args[1])
+	jsonAsBytes, _ := json.Marshal(args[0])
 	err := stub.PutState(args[0], jsonAsBytes)
 	if err != nil {
 		return nil, err
@@ -89,8 +89,8 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return t.Init(stub, "init", args)
 	} else if function == "PutEvent" {
 		return t.PutEvent(stub, args)
-	}else if(function =="write"){
-		return t.Write(stub,args);
+	}else if(function =="Engrave"){
+		return t.Engrave(stub,args);
 	}
 	fmt.Println("invoke did not find func: " + function) //error
 
@@ -107,7 +107,7 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	} else if function == "GetInsuranceEvent" {
 		return t.GetInsuranceEvent(stub, args)
 	} else if function == "read" {
-		return t.read(stub, args)
+		return t.Read(stub, args)
 	}
 	fmt.Println("query did not find func: " + function) //error
 
@@ -215,7 +215,7 @@ func (t *SimpleChaincode) GetInsuranceEvent(stub shim.ChaincodeStubInterface, ar
 	return jsonAsBytes, nil
 }
 
-func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+func (t *SimpleChaincode) Read(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fcn = args[0]
 	valAsbytes, err := stub.GetState(fcn)									//get the var from chaincode state
 	if err != nil {
